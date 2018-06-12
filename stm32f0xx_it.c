@@ -43,16 +43,14 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 uint16_t capture = 0;
-extern __IO uint16_t CCR1_Val;
-extern __IO uint16_t CCR2_Val;
-extern __IO uint16_t CCR3_Val;
-extern __IO uint16_t CCR4_Val;
+
 
 extern __IO uint8_t exti_flag;
 extern __IO uint32_t counting;
 
 extern __IO uint8_t pressed;
 extern __IO uint8_t no_exti;
+extern __IO uint8_t exti_cnt;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -120,7 +118,10 @@ void EXTI4_15_IRQHandler(void)
     exti_flag = 8;
     EXTI_ClearITPendingBit(EXTI_Line8);
   }
-  else{EXTI_ClearITPendingBit(EXTI_Line8);}
+  else{
+  exti_cnt ++;
+  EXTI_ClearITPendingBit(EXTI_Line8);
+  }
 
 	if(EXTI_GetITStatus(EXTI_Line6) != RESET && no_exti == 0)
   {

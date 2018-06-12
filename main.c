@@ -24,7 +24,7 @@ __IO uint8_t pressed = 0;
 __IO uint8_t no_exti = 0;
 uint8_t tmp = 0;
 __IO uint8_t exti_flag = 0;//record which pin has interrupt
-
+__IO uint8_t exti_cnt = 0;
 
 uint8_t keys[12] = {0};
 uint8_t i;
@@ -83,66 +83,110 @@ int main(void)
     keys[i] = 0;
   }
 
+//uint8_t front = 0;
 /*------------------------------------------------------------------------------------------*/  
 	while (1)
   {
     switch(exti_flag)
 		{
-      case 8:
-        no_exti = 1;
-        scan8();
-        no_exti = 0;
-
-        if(keys[1] + keys[4] +keys[7] + keys[10] > 1){
-          if(scan_flag == 10){
-            printf("star");
+        case 8:
+        Delay(2);
+//       printf("pressed-----");
+        if( GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_8) == RESET )
+        {
+//          printf("out~~~~~");
+          exti_flag = 0;
+        break;
         }
-          else{
-            printf("%d",scan_flag);
+
+        no_exti = 1;
+
+
+
+        scan8();
+
+        if(keys[1] + keys[4] +keys[7] + keys[10] > 0)
+        {
+          if(scan_flag == 10)
+          {
+            printf("star");
+          }
+          else
+          {
+            printf("%d", scan_flag);
           }
         }  
 
         while(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_8) != RESET){}
+        Delay(5);
         exti_flag = 0;
-        for(i = 0; i < 12; i ++){
+        no_exti = 0;
+        exti_cnt = 0;
+        for(i = 0; i < 12; i ++)
+        {
           keys[i] = 0;
         }
 
       break;
 
       case 6:
+        Delay(2);
+        //printf("pressed-----");
+        if( GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_6) == RESET )
+        {
+          //printf("out~~~~~");
+          exti_flag = 0;
+          break;
+        }
         no_exti = 1;
         scan6();
-        no_exti = 0;
 
-        if(keys[2] + keys[5] +keys[8] + keys[0] > 1){
-          printf("%d",scan_flag);
+        if(keys[2] + keys[5] +keys[8] + keys[0] > 1)
+        {
+          printf("%d", scan_flag);
         }  
 
         while(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_6) != RESET){}
+        Delay(5);
         exti_flag = 0;
-        for(i = 0; i < 12; i ++){
+        no_exti = 0;
+
+        for(i = 0; i < 12; i ++)
+        {
           keys[i] = 0;
         }
       break;
 
       case 5:
+        Delay(2);
+        //printf("pressed-----");
+        if( GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5) == RESET )
+        {
+          //printf("out~~~~~");
+          exti_flag = 0;
+          break;
+        }
         no_exti = 1;
         scan5();
-        no_exti = 0;
 
-        if(keys[3] + keys[6] +keys[9] + keys[11] > 1){
-          if(scan_flag == 11){
+        if(keys[3] + keys[6] +keys[9] + keys[11] > 1)
+        {
+          if(scan_flag == 11)
+          {
             printf("number");
-        }
-          else{
-            printf("%d",scan_flag);
+          }
+          else
+          {
+            printf("%d", scan_flag);
           }
         }  
 
         while(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5) != RESET){}
+        Delay(5);
         exti_flag = 0;
-        for(i = 0; i < 12; i ++){
+        no_exti = 0;
+          for(i = 0; i < 12; i ++)
+        {
           keys[i] = 0;
         }
       default:
@@ -161,9 +205,8 @@ static void scan8(void)
   GPIOC->BRR = GPIO_Pin_12;
   GPIOC->BSRR = GPIO_Pin_10;
   while(pressed < tmp + 5){
-    GPIOA->BSRR = GPIO_Pin_7;
+    GPIOA->BRR = GPIO_Pin_7;
     GPIOC->BSRR = GPIO_Pin_10;
-
     if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_8) != RESET){
       keys[1] ++;
     }
@@ -200,7 +243,7 @@ static void scan6(void)
   GPIOC->BRR = GPIO_Pin_12;
   GPIOC->BSRR = GPIO_Pin_10;
   while(pressed < tmp + 5){
-    GPIOA->BSRR = GPIO_Pin_7;
+    GPIOA->BRR = GPIO_Pin_7;
     GPIOC->BSRR = GPIO_Pin_10;
 
     if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_6) != RESET){
@@ -224,7 +267,7 @@ static void scan6(void)
   }
 
   scan_flag = keys[2] > keys[5] ? (keys[2] > keys[8]?(keys[2] > keys[0] ? 2:0):(keys[8] > keys[0] ? 8:0)):(keys[5] > keys[8]?(keys[5] > keys[0] ? 5:0):(keys[8] > keys[0] ? 8:0));
-  
+
   GPIOA->BSRR = GPIO_Pin_6 | GPIO_Pin_7;
 	GPIOC->BSRR = GPIO_Pin_10 | GPIO_Pin_12;
 
@@ -239,7 +282,7 @@ static void scan5(void)
   GPIOC->BRR = GPIO_Pin_12;
   GPIOC->BSRR = GPIO_Pin_10;
   while(pressed < tmp + 5){
-    GPIOA->BSRR = GPIO_Pin_7;
+    GPIOA->BRR = GPIO_Pin_7;
     GPIOC->BSRR = GPIO_Pin_10;
 
     if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5) != RESET){
